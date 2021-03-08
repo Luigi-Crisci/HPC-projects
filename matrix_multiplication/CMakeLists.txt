@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 3.13)
+project(matrix)
+
+find_package(OpenMP REQUIRED)
+
+include(GNUInstallDirs)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -O2")
+
+add_subdirectory(main)
+enable_testing()
+add_subdirectory(test)
+
+# set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+# set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+# include(CPack)

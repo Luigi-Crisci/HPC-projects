@@ -1,0 +1,11 @@
+4096 x 4096
+Basic Multiply
+Time elapsed: 774.349 s
+Basic Multiply with interchange
+Time elapsed: 65.624 s
+Parallel multiply
+Time elapsed: 42.034 s
+Parallel Tailed
+Time elapsed: 15.073 s
+Parallel Tailed with 5 for
+Time elapsed: 54.812 s

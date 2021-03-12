@@ -1,13 +1,16 @@
 #include <iostream>
+#include <stdlib.h>
 #include <omp.h>
 #include <chrono>
 #include <errno.h>
 
-double pi_function(double x){
-    return 4.0 / (1.0 + (x * x)); 
+double pi_function(double x)
+{
+    return 4.0 / (1.0 + (x * x));
 }
 
-double calculate_p1_sequential(int n){
+double calculate_p1_sequential(int n)
+{
     const double base = 1.0 / n;
     double height_sum = 0.0;
     double current_x;
@@ -19,10 +22,12 @@ double calculate_p1_sequential(int n){
     return base * height_sum;
 }
 
-double calculate_pi_parallel(int n){
+double calculate_pi_parallel(int n)
+{
     double area = 0.0;
     const double base = 1.0 / n;
-    #pragma omp parallel reduction (+ : area)
+#pragma omp parallel reduction(+ \
+                               : area)
     {
         int thread_num = omp_get_thread_num();
         int section_size = n / omp_get_num_threads();
@@ -36,22 +41,29 @@ double calculate_pi_parallel(int n){
             current_x = base * ((double)i);
             current_height += pi_function(current_x);
         }
-        
+
         area = base * current_height;
     }
     return area;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
 
-    if(argc < 2){
-        fprintf(stderr,"Please provide the number of rectangle");
+    if (argc < 2)
+    {
+        fprintf(stderr, "Please provide the number of rectangle");
         exit(EXIT_FAILURE);
     }
 
-    int n = strtol(argv[1],NULL,10);
-    if(errno == EINVAL){
-        fprintf(stderr,"Incorrect parameter: please provide an integer");
+    int n = 0;
+    try
+    {
+        n = std::stoi(argv[1], NULL, 10);
+    }
+    catch (const std::invalid_argument &e)
+    {
+        std::cerr << "Incorrect parameter: please provide an integer" << '\n';
         exit(EXIT_FAILURE);
     }
 
@@ -59,12 +71,13 @@ int main(int argc, char** argv) {
     double pi = calculate_p1_sequential(n);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
+    std::cout << "Sequential - Pi value: " << pi << " - Time: " << (_Float64)std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0 << " s" << std::endl;
+
     double start_p = omp_get_wtime();
     double pi_p = calculate_pi_parallel(n);
     double stop_p = omp_get_wtime();
-    
-    std::cout << "Sequential - Pi value: "<<pi<<" - Time: "<< (_Float64)std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0 <<" s"<<std::endl;
-    std::cout << "Parallel - Pi value: "<<pi_p<<" - Time: "<< stop_p - start_p <<" s"<<std::endl;
+
+    std::cout << "Parallel - Pi value: " << pi_p << " - Time: " << stop_p - start_p << " s" << std::endl;
 
     return 0;
 }
